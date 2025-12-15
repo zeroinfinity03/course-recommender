@@ -17,5 +17,5 @@ RUN uv sync --frozen --no-dev
 COPY src/app.py .
 COPY src/reco_artifacts.joblib .
 
-# SageMaker runs on Port 8080
-CMD ["uv", "run", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
+# SageMaker runs container with 'serve' argument - use ENTRYPOINT to ignore it
+ENTRYPOINT ["uv", "run", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
