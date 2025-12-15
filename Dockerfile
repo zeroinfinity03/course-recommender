@@ -17,5 +17,11 @@ RUN uv sync --frozen --no-dev
 COPY src/app.py .
 COPY src/reco_artifacts.joblib .
 
-# SageMaker runs container with 'serve' argument - use ENTRYPOINT to ignore it
-ENTRYPOINT ["uv", "run", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
+# Copy entrypoint script and make executable
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# SageMaker runs: docker run <image> serve
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["serve"]
+
