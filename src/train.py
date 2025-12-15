@@ -5,13 +5,18 @@ from sklearn.metrics.pairwise import cosine_similarity
 import re
 import os
 
-# --- Configuration ---
+# Configuration
 DATA_DIR = "data"
 ARTIFACTS_DIR = "src"
 
 os.makedirs(ARTIFACTS_DIR, exist_ok=True)
 
 print("Starting Training...")
+
+
+
+
+
 
 # 1. Load Data
 try:
@@ -24,6 +29,11 @@ except FileNotFoundError:
 print(f"Courses loaded: {len(courses_df)}")
 print(f"Enrollments loaded: {len(enrollments_df)}")
 
+
+
+
+
+
 # 2. Preprocessing (Matching your notebook logic)
 print("Cleaning text features...")
 def clean_text(text):
@@ -32,11 +42,20 @@ def clean_text(text):
     text = re.sub(r'[^a-z0-9\s]', ' ', text)
     return re.sub(r'\s+', ' ', text).strip()
 
+
+
+
+
+
 # Apply cleaning to ALL columns you used in the notebook
 courses_df['clean_title'] = courses_df['title'].apply(clean_text)
 courses_df['clean_description'] = courses_df['description'].apply(clean_text)
 courses_df['clean_skill_tags'] = courses_df['skill_tags'].apply(clean_text)
 courses_df['clean_difficulty'] = courses_df['difficulty'].apply(clean_text)
+
+
+
+
 
 # Feature Enrichment: Combine all these columns
 print("Creating combined features...")
@@ -46,6 +65,10 @@ courses_df['combined_features'] = (
     courses_df['clean_skill_tags'] + ' ' +
     courses_df['clean_difficulty']
 )
+
+
+
+
 
 # 3. TF-IDF & Similarity (Using your specific settings)
 print("Computing TF-IDF and Similarity Matrix...")
@@ -60,6 +83,12 @@ similarity_matrix = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
 print(f"TF-IDF Matrix Shape: {tfidf_matrix.shape}")
 print(f"Similarity Matrix Shape: {similarity_matrix.shape}")
+
+
+
+
+
+
 
 # 4. Save Artifacts
 print("Saving Model Artifacts...")

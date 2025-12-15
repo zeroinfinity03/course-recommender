@@ -31,8 +31,8 @@ commands = [
     # 2. Create Repository (ignore error if exists)
     f"aws ecr create-repository --repository-name {REPO_NAME} --region {REGION} || true",
     
-    # 3. Build Docker Image
-    f"docker build -t {REPO_NAME} .",
+    # 3. Build Docker Image (force linux/amd64 for SageMaker)
+    f"docker build --platform linux/amd64 --provenance=false -t {REPO_NAME} .",
     
     # 4. Tag Image
     f"docker tag {REPO_NAME}:latest {IMAGE_URI}",
@@ -50,3 +50,7 @@ for cmd in commands:
 
 print(f"\nSuccess! Image uploaded to: {IMAGE_URI}")
 print("You are now ready to create a SageMaker Endpoint!")
+
+
+
+
