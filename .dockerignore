@@ -1,0 +1,29 @@
+# Virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+
+# Data (not needed in Docker - model already trained)
+data/
+
+# Training script (not needed for inference)
+src/train.py
+
+# Other
+.DS_Store
+*.log
+README.md
+deploy.py
+main.py
+.python-version

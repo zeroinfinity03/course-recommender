@@ -1,0 +1,13 @@
+[project]
+name = "12-mlops"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.124.4",
+    "joblib>=1.5.2",
+    "pandas>=2.3.3",
+    "scikit-learn>=1.8.0",
+    "uvicorn>=0.38.0",
+]
