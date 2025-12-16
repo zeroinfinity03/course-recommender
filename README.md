@@ -156,13 +156,24 @@ POST /invocations
 ## Local Testing
 
 ```bash
-# Run the FastAPI server locally
-SM_MODEL_DIR=. uvicorn src.app:app --host 0.0.0.0 --port 8080
+# Run the FastAPI proxy
+uv run python main.py
+# Then visit: http://localhost:8000/docs
+```
+
+## Cleanup (Stop Charges)
+
+SageMaker endpoints cost ~$0.05/hour. To stop charges:
+
+```bash
+# Delete endpoint
+uv run python delete_endpoint.py
+
+# Recreate when needed
+uv run python deploy.py
 ```
 
 ## License
 
 MIT
-
-
-
+```
