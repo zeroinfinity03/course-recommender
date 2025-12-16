@@ -176,4 +176,3 @@ uv run python deploy.py
 ## License
 
 MIT
-```
