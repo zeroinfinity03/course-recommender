@@ -12,7 +12,7 @@ This project implements a content-based recommendation engine that suggests cour
                                     ┌─────────────────────────────┐
                                     │     SageMaker Endpoint      │
                                     │  ┌───────────────────────┐  │
-React Frontend ──► API Gateway ──► Lambda ──►Docker Container   │
+React Frontend ──► API Gateway ──► Lambda ──►Docker Container    │
                                     │  │      (app.py)         │  │
                                     │  └───────────────────────┘  │
                                     └─────────────────────────────┘

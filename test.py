@@ -1,3 +1,6 @@
+# Test script for SageMaker Endpoint
+# Tests both user recommendations and similar courses.
+
 
 import boto3
 import json
