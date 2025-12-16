@@ -9,9 +9,16 @@ This project implements a content-based recommendation engine that suggests cour
 ## Architecture
 
 ```
-React Frontend/Local Testing → API Gateway → Lambda → SageMaker Endpoint → Docker Container (app.py)
-                                                                      ↓
-                                                              S3 (model.tar.gz)
+                                    ┌─────────────────────────────┐
+                                    │     SageMaker Endpoint      │
+                                    │  ┌───────────────────────┐  │
+React Frontend ──► API Gateway ──► Lambda ──►Docker Container   │
+                                    │  │      (app.py)         │  │
+                                    │  └───────────────────────┘  │
+                                    └─────────────────────────────┘
+                                               ▲           ▲
+                                               │           │
+                                        ECR (image)   S3 (model.tar.gz)
 ```
 
 ### How It Works
