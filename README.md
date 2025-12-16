@@ -43,15 +43,17 @@ React Frontend ──► API Gateway ──► Lambda ──►Docker Container 
 ```
 12. mlops/
 ├── src/
-│   ├── train.py          # Training script (creates model.tar.gz)
+│   ├── train.py           # Training script (creates model.tar.gz)
 │   └── app.py             # Inference server (runs in SageMaker)
 ├── data/
 │   ├── courses.csv        # Course catalog
 │   └── enrollments.csv    # User enrollment history
-├── deploy.py              # SageMaker deployment script
+├── deploy.py              # Deploy SageMaker endpoint
+├── delete_endpoint.py     # Delete endpoint (stop charges)
+├── main.py                # FastAPI proxy for testing
+├── lambda.py              # Lambda function code
 ├── Dockerfile             # Container definition
 ├── entrypoint.sh          # Container startup script
-├── main.py                # FastAPI proxy (optional local testing)
 └── pyproject.toml         # Dependencies
 ```
 
