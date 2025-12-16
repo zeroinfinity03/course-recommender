@@ -9,15 +9,17 @@ app = FastAPI()
 model_artifacts = None
 
 # --- 1. Load Model ---
+# SageMaker extracts model.tar.gz to /opt/ml/model/
+MODEL_DIR = os.environ.get("SM_MODEL_DIR", "/opt/ml/model")
+
 def load_model():
     global model_artifacts
-    # The artifact is in the same folder as this script
-    path = os.path.join(os.path.dirname(__file__), "reco_artifacts.joblib")
+    path = os.path.join(MODEL_DIR, "reco_artifacts.joblib")
     try:
         model_artifacts = joblib.load(path)
-        print("Model loaded successfully.")
+        print(f"Model loaded successfully from {path}")
     except Exception as e:
-        print(f"Error loading model: {e}")
+        print(f"Error loading model from {path}: {e}")
         model_artifacts = None
 
 # Load immediately on startup

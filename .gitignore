@@ -66,3 +66,9 @@ data/
 # Docker (optional - uncomment if needed)
 # Dockerfile
 # .dockerignore
+
+# Personal notes (not for git)
+notes.txt
+
+# SageMaker model package (large file)
+model.tar.gz

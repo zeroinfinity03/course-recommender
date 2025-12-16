@@ -285,17 +285,20 @@ U0001,Ananya Das,ananya.das1@example.com,C0008
 
 
 
-# Install tools (if needed)
-uv tool install awscli
 
-# setup aws account, group and user then we will get csv credentials file, then we can do this to set it:
 
-aws configure
-region: us-east-1
-output: json
-aws sts get-caller-identity
-aws configure list
-aws ecr describe-repositories --region us-east-1
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

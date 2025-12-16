@@ -13,9 +13,8 @@ COPY uv.lock .
 # Install dependencies
 RUN uv sync --frozen --no-dev
 
-# Copy source code and model artifacts
+# Copy source code (model comes from S3, not Docker image)
 COPY src/app.py .
-COPY src/reco_artifacts.joblib .
 
 # Copy entrypoint script and make executable
 COPY entrypoint.sh /app/entrypoint.sh

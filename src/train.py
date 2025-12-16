@@ -4,10 +4,11 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import re
 import os
+import tarfile
 
 # Configuration
 DATA_DIR = "data"
-ARTIFACTS_DIR = "src"
+ARTIFACTS_DIR = "."  # Save to project root for easy S3 upload
 
 os.makedirs(ARTIFACTS_DIR, exist_ok=True)
 
@@ -103,5 +104,23 @@ artifacts = {
 
 save_path = os.path.join(ARTIFACTS_DIR, "reco_artifacts.joblib")
 joblib.dump(artifacts, save_path, compress=3)
+print(f"Model saved to {save_path}")
 
-print(f"Done! Model saved to {save_path}")
+
+# 5. Create model.tar.gz for SageMaker
+print("Creating model.tar.gz for SageMaker...")
+tar_path = "model.tar.gz"  # Saved in project root (12. mlops/)
+with tarfile.open(tar_path, "w:gz") as tar:
+    tar.add(save_path, arcname="reco_artifacts.joblib")
+
+print(f"Done! Package created: {tar_path}")
+
+
+
+
+
+
+
+
+
+
