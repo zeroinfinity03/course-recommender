@@ -1,0 +1,105 @@
+name: Deploy to SageMaker
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: course-image-api
+  ENDPOINT_NAME: course-reco-endpoint
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout Code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Configure AWS Credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # 3. Login to ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # 4. Build and Push Docker Image
+      - name: Build and push Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build --platform linux/amd64 --provenance=false -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker build --platform linux/amd64 --provenance=false -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      # 5. Update SageMaker Endpoint
+      - name: Update SageMaker Endpoint
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+          ENDPOINT_NAME: ${{ env.ENDPOINT_NAME }}
+          ECR_REPO: ${{ env.ECR_REPOSITORY }}
+        run: |
+          pip install boto3
+          python -c "
+          import boto3
+          import os
+          from datetime import datetime
+
+          # Environment Variables se values lo (Safe Way)
+          region = os.environ['AWS_REGION']
+          registry = os.environ['ECR_REGISTRY']
+          repo = os.environ['ECR_REPO']
+          endpoint_name = os.environ['ENDPOINT_NAME']
+
+          client = boto3.client('sagemaker', region_name=region)
+          
+          timestamp = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+          model_name = f'course-reco-model-{timestamp}'
+          config_name = f'course-reco-config-{timestamp}'
+          
+          # Image URI Construct karo
+          image_uri = f'{registry}/{repo}:latest'
+
+          # Create new model
+          client.create_model(
+              ModelName=model_name,
+              PrimaryContainer={
+                  'Image': image_uri,
+                  'ModelDataUrl': 's3://coursetraineddata/model.tar.gz',
+              },
+              ExecutionRoleArn='arn:aws:iam::720090397062:role/SageMakerExecutionRole'
+          )
+          print(f'Created model: {model_name}')
+          
+          # Create new endpoint config
+          client.create_endpoint_config(
+              EndpointConfigName=config_name,
+              ProductionVariants=[{
+                  'VariantName': 'AllTraffic',
+                  'ModelName': model_name,
+                  'InitialInstanceCount': 1,
+                  'InstanceType': 'ml.t2.medium',
+              }]
+          )
+          print(f'Created config: {config_name}')
+          
+          # Update endpoint with new config
+          client.update_endpoint(
+              EndpointName=endpoint_name,
+              EndpointConfigName=config_name
+          )
+          print('Endpoint update initiated!')
+          "
+
