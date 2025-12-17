@@ -2,18 +2,26 @@ import boto3
 import time
 from datetime import datetime
 
-# --- CONFIGURATION ---
-# 1. ECR Image URI
+
+# ECR URI
 image_uri = "720090397062.dkr.ecr.us-east-1.amazonaws.com/course-image-api:latest"
 
-# 2. S3 Model URI
+# S3 Model URI
 model_data = "s3://coursetraineddata/model.tar.gz"
 
-# 3. IAM Role ARN
+# IAM Role ARN
 role_arn = "arn:aws:iam::720090397062:role/SageMakerExecutionRole"
 
-# --- DEPLOYMENT LOGIC (BOTO3 VERSION) ---
 client = boto3.client("sagemaker", region_name="us-east-1")
+
+
+
+
+
+
+
+
+
 
 # Unique Names (Timestamp to avoid name conflicts)
 timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
@@ -24,8 +32,13 @@ endpoint_name = "course-reco-endpoint"  # Fixed name for easier access
 print(f"Deploying to AWS Region: us-east-1")
 print(f"Model Name: {model_name}")
 
+
+
+
+
+
 # 1. Create Model (Brain + Body)
-print("\nStep 1: Creating SageMaker Model...")
+print("\nStep 1: Creating SageMaker Model")
 client.create_model(
     ModelName=model_name,
     PrimaryContainer={
@@ -36,8 +49,12 @@ client.create_model(
 )
 print("Model Created!")
 
+
+
+
+
 # 2. Create Endpoint Config (Hardware Settings)
-print("\nStep 2: Creating Endpoint Configuration...")
+print("\nStep 2: Creating Endpoint ")
 client.create_endpoint_config(
     EndpointConfigName=endpoint_config_name,
     ProductionVariants=[
@@ -51,6 +68,12 @@ client.create_endpoint_config(
 )
 print("Endpoint Config Created!")
 
+
+
+
+
+
+
 # 3. Create Endpoint (The Server)
 print("\nStep 3: Creating Endpoint (This takes 5-10 mins)...")
 try:
@@ -58,7 +81,7 @@ try:
         EndpointName=endpoint_name,
         EndpointConfigName=endpoint_config_name
     )
-    print("Creating Endpoint... Please wait.")
+    print("Creating Endpoint so I have to wait here")
 except client.exceptions.ResourceInUse:
     print(f"Endpoint '{endpoint_name}' already exists. Deleting it first...")
     client.delete_endpoint(EndpointName=endpoint_name)
@@ -69,8 +92,65 @@ except client.exceptions.ResourceInUse:
     )
     print("Re-creating Endpoint...")
 
+
+
+
+
+
+
+
+
 # 4. Waiter (Script waits until deployment completes)
 waiter = client.get_waiter("endpoint_in_service")
 waiter.wait(EndpointName=endpoint_name)
 
-print(f"\nDeployment Complete! The Endpoint is LIVE: {endpoint_name}")
+print(f"\nDeployment ho gya! ab woh edpoint live hai: {endpoint_name}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

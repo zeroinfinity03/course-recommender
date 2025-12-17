@@ -8,8 +8,7 @@ import uvicorn
 app = FastAPI()
 model_artifacts = None
 
-# --- 1. Load Model ---
-# SageMaker extracts model.tar.gz to /opt/ml/model/
+# Load Model: SageMaker extracts model.tar.gz to /opt/ml/model/
 MODEL_DIR = os.environ.get("SM_MODEL_DIR", "/opt/ml/model")
 
 def load_model():
@@ -24,6 +23,9 @@ def load_model():
 
 # Load immediately on startup
 load_model()
+
+
+
 
 # --- 2. Core Logic ---
 def get_similar_courses_logic(course_id, top_n=5):
