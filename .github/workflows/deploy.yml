@@ -43,8 +43,8 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      # 5. Update SageMaker Endpoint
-      - name: Update SageMaker Endpoint
+      # 5. Deploy SageMaker Endpoint
+      - name: Deploy SageMaker Endpoint
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           AWS_REGION: ${{ env.AWS_REGION }}
@@ -55,9 +55,10 @@ jobs:
           python -c "
           import boto3
           import os
+          import time
           from datetime import datetime
 
-          # Environment Variables se values lo (Safe Way)
+          # Environment Variables
           region = os.environ['AWS_REGION']
           registry = os.environ['ECR_REGISTRY']
           repo = os.environ['ECR_REPO']
@@ -69,10 +70,10 @@ jobs:
           model_name = f'course-reco-model-{timestamp}'
           config_name = f'course-reco-config-{timestamp}'
           
-          # Image URI Construct karo
+          # Image URI
           image_uri = f'{registry}/{repo}:latest'
 
-          # Create new model
+          # 1. Create Model
           client.create_model(
               ModelName=model_name,
               PrimaryContainer={
@@ -83,7 +84,7 @@ jobs:
           )
           print(f'Created model: {model_name}')
           
-          # Create new endpoint config
+          # 2. Create Endpoint Config
           client.create_endpoint_config(
               EndpointConfigName=config_name,
               ProductionVariants=[{
@@ -95,11 +96,20 @@ jobs:
           )
           print(f'Created config: {config_name}')
           
-          # Update endpoint with new config
-          client.update_endpoint(
-              EndpointName=endpoint_name,
-              EndpointConfigName=config_name
-          )
-          print('Endpoint update initiated!')
+          # 3. Create or Update Endpoint
+          try:
+              # Try to create new endpoint
+              client.create_endpoint(
+                  EndpointName=endpoint_name,
+                  EndpointConfigName=config_name
+              )
+              print(f'Creating new endpoint: {endpoint_name}')
+          except client.exceptions.ResourceInUse:
+              # Endpoint exists, update it
+              print(f'Endpoint exists, updating: {endpoint_name}')
+              client.update_endpoint(
+                  EndpointName=endpoint_name,
+                  EndpointConfigName=config_name
+              )
+              print('Endpoint update initiated!')
           "
-
